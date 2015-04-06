@@ -1,5 +1,7 @@
 package com.daggerstudio.lunar;
 
+import java.util.Calendar;
+
 class Lunar {
     public boolean isleap;
     public int lunarDay;
@@ -11,6 +13,13 @@ class Solar {
     public int solarDay;
     public int solarMonth;
     public int solarYear;
+    public  Solar(){}
+
+    public Solar(int year, int month, int day){
+        this.solarDay = day;
+        this.solarMonth = month;
+        this.solarYear = year;
+    }
 }
 
 public class LunarExecutor {
@@ -48,6 +57,9 @@ public class LunarExecutor {
             0xfb52, 0x16b4, 0xaba, 0xa95b, 0x936, 0x1496, 0x9a4b, 0x154a,
             0x136a5, 0xda4, 0x15ac };
 
+    /**
+     * The lunar new year in <i>Int</i> format
+     */
     public static int[] solar_1_1 = { 1887, 0xec04c, 0xec23f, 0xec435, 0xec649,
             0xec83e, 0xeca51, 0xecc46, 0xece3a, 0xed04d, 0xed242, 0xed436,
             0xed64a, 0xed83f, 0xeda53, 0xedc48, 0xede3d, 0xee050, 0xee244,
@@ -83,10 +95,34 @@ public class LunarExecutor {
             0x106a3d, 0x106c51, 0x106e47, 0x10703c, 0x10724f, 0x107444,
             0x107638, 0x10784c, 0x107a3f, 0x107c53, 0x107e48 };
 
+    /**
+     * Extract sub-data from <i>data</i> with specified <i>length</i> and <i>shift</i>
+     * @param data The date to be dealt with.
+     * @param length The length of the sub-data to be extracted
+     * @param shift The shift of sub-data from least significant bits.
+     * @return The sub-data extracted from <i>data</i>
+     */
     public static int GetBitInt(int data, int length, int shift) {
         return (data & (((1 << length) - 1) << shift)) >> shift;
     }
 
+
+    /**
+     * Check if the given solar date is validate.
+     * @param solarYear
+     * @param solarMonth
+     * @param solarDay
+     * @return <i>boolean</i> If the given solar date is validate.
+     */
+    private static boolean checkDate(int solarYear, int solarMonth, int solarDay){
+        if(solarMonth>12 || solarMonth<1 || solarYear<1){
+            return false;
+        }
+        Calendar mCalendar = Calendar.getInstance();
+        mCalendar.set(Calendar.YEAR, solarYear);
+        mCalendar.set(Calendar.MONTH, solarMonth-1);
+        return ((solarDay>=mCalendar.getActualMinimum(Calendar.DATE)) && (solarDay<=mCalendar.getActualMaximum(Calendar.DATE)));
+    }
     // WARNING: Dates before Oct. 1582 are inaccurate
     public static long SolarToInt(int y, int m, int d) {
         m = (m + 9) % 12;
@@ -152,7 +188,20 @@ public class LunarExecutor {
         return SolarFromInt(SolarToInt(y, m, d) + offset - 1);
     }
 
+    /**
+     * Convert Solay date into Lunar date. Return all -1 indicating invalidate Solar date.
+     * @param solar Solar date
+     * @return Lunar date, return all -1 indicating invalidate Solar date.
+     */
     public static Lunar SolarToLunar(Solar solar) {
+        if (!checkDate(solar.solarYear, solar.solarMonth, solar.solarDay)){
+            Lunar lunar = new Lunar();
+            lunar.lunarYear = -1;    // reflect error information
+            lunar.lunarMonth = -1;
+            lunar.lunarDay = -1;
+            lunar.isleap = false;
+            return lunar;
+        }
         Lunar lunar = new Lunar();
         int index = solar.solarYear - solar_1_1[0];
         int data = (solar.solarYear << 9) | (solar.solarMonth << 5)
