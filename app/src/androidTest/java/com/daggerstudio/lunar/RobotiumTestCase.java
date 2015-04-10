@@ -1,3 +1,5 @@
+package com.daggerstudio.lunar;
+
 import android.graphics.PointF;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -36,27 +38,24 @@ public class RobotiumTestCase extends ActivityInstrumentationTestCase2{
         super.tearDown();
     }
 
-    public void testBatch(){
-        nextDayButton_test();
-    }
-    public void nextDayButton_test(){
+    public void testNextDayButton(){
         if(solo == null){
             solo = new Solo(getInstrumentation(), getActivity());
         }
         Random random = new Random();
         random.setSeed(45897678);
         for(int i = 0;i<4;i++){
-            solo.clickOnButton("计算下一天");
-            boolean toast = false;
-            toast = solo.searchText("计算完成");
-            assertEquals(true, toast);
-            solo.sleep(1000);
             PointF p1 = new PointF(260, 640);
             PointF p2 = new PointF(260, 300);
             solo.swipe(p1, p1, p2, p2);
-            solo.sleep(500);
             solo.clickOnScreen(random.nextFloat()*250+370, random.nextFloat()*380+400);
-            solo.sleep(500);
+            solo.clickOnButton("计算下一天");
+            boolean toast = false;
+            toast = solo.waitForText("计算完成", 1, 300);
+            assertTrue("Calculate Fail", toast);
+            //Takes a screenshot and saves it in "/sdcard/Robotium-Screenshots/".
+            solo.takeScreenshot();
         }
     }
+
 }

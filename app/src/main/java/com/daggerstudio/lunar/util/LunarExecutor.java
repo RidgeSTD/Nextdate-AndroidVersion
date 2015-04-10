@@ -1,26 +1,4 @@
-package com.daggerstudio.lunar;
-
-import java.util.Calendar;
-
-class Lunar {
-    public boolean isleap;
-    public int lunarDay;
-    public int lunarMonth;
-    public int lunarYear;
-}
-
-class Solar {
-    public int solarDay;
-    public int solarMonth;
-    public int solarYear;
-    public  Solar(){}
-
-    public Solar(int year, int month, int day){
-        this.solarDay = day;
-        this.solarMonth = month;
-        this.solarYear = year;
-    }
-}
+package com.daggerstudio.lunar.util;
 
 public class LunarExecutor {
 	/*
