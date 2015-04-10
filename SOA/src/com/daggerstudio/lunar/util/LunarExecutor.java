@@ -226,4 +226,8 @@ public class LunarExecutor {
         lunar.lunarDay = lunarD;
         return lunar;
     }
+
+    public static void main(String[] args) {
+        Lunar l = LunarExecutor.SolarToLunar(new Solar(2015, 1, 1));
+    }
 }
